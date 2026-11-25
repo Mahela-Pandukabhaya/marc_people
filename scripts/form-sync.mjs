@@ -126,9 +126,13 @@ export function profileMarkdown(d, body, extras = {}) {
     out.push("status: past");
     if (d.currentPosition) out.push(`currentPosition: ${q(d.currentPosition)}`);
   }
+  // Other fields (detail, order, page, links, …) are kept as they were: numbers and true/false stay
+  // unquoted, and a map such as `links` stays a map.
+  const scalar = (v) => (typeof v === "number" || typeof v === "boolean" ? String(v) : q(v));
   for (const [k, v] of Object.entries(extras)) {
     if (Array.isArray(v)) out.push(v.length ? `${k}:` : `${k}: []`, ...v.map((x) => `  - ${q(x)}`));
-    else out.push(`${k}: ${q(v)}`);
+    else if (v && typeof v === "object") out.push(`${k}:`, ...Object.entries(v).map(([kk, vv]) => `  ${kk}: ${scalar(vv)}`));
+    else out.push(`${k}: ${scalar(v)}`);
   }
   out.push("---");
   return out.join("\n") + "\n" + (body ? body.trim() + "\n" : "");
