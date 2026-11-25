@@ -182,7 +182,7 @@ Keep it reasonably simple and readable. Plain paragraphs are completely fine.
 ## :bookmark_tabs: Fields used by the website
 
 The website currently validates each person entry with these fields:
-- `email`: must be a valid email address
+- `email`: a valid email address; needed to appear on project pages, optional otherwise
 - `post`: your role
 - `name`: your display name
 - `photo`: optional image path
@@ -193,6 +193,12 @@ The website currently validates each person entry with these fields:
 
 The website also renders your Markdown content as the biography on your profile page.
 
+Optional **card fields**, used mostly by the Director, Deputy Directors, Members and Advisors (full guide: [pdnmarc.github.io/docs/profiles/#card-fields](https://pdnmarc.github.io/docs/profiles/#card-fields)):
+- `detail`: a line under the role on the People page card, e.g. `"Planning"` or a satellite centre
+- `order`: position within the role's group on the People page, `1` first
+- `links`: round buttons on the card: `website`, `university`, `scholar`, `linkedin` (each optional)
+- `page`: `false` shows only the card, without a page of its own
+
 ## :label: Supported roles
 
 Use one of these exact values for `post`. The People page groups people by role under these headings:
@@ -201,6 +207,8 @@ Use one of these exact values for `post`. The People page groups people by role 
 |---|---|
 | `Director` | Director |
 | `Deputy Director` | Deputy Directors |
+| `Member` | Members |
+| `Advisor` | Advisors |
 | `Project Coordinator` | Engineers, Research Assistants & Coordinators |
 | `Research Engineer` | Engineers, Research Assistants & Coordinators |
 | `Research Assistant` | Engineers, Research Assistants & Coordinators |

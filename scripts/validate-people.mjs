@@ -11,6 +11,8 @@ const contentDir = path.join(repoRoot, "profiles");
 const allowedRoles = [
   "Director",
   "Deputy Director",
+  "Member",
+  "Advisor",
   "Project Coordinator",
   "Research Engineer",
   "Research Assistant",
@@ -18,9 +20,12 @@ const allowedRoles = [
   "Volunteer",
 ];
 
+const url = z.string().url();
+
 const frontmatterSchema = z
   .object({
-    email: z.string().email(),
+    // Links the profile to projects (never shown). Optional for people who are on no project page.
+    email: z.string().email().optional(),
     post: z.enum(allowedRoles),
     name: z.string().trim().min(1),
     photo: z.string().trim().min(1).optional(),
@@ -31,6 +36,16 @@ const frontmatterSchema = z
     // Past members stay on the website under "Past members", still linked to their projects and papers.
     status: z.enum(["current", "past"]).optional(),
     currentPosition: z.string().trim().min(1).optional(),
+    // People page card: a line under the role (portfolio, satellite centre or institution), the
+    // position within the role's group (1 first), and round buttons to the person's own pages.
+    detail: z.string().trim().min(1).optional(),
+    order: z.number().int().positive().optional(),
+    links: z
+      .object({ website: url.optional(), university: url.optional(), scholar: url.optional(), linkedin: url.optional() })
+      .strict()
+      .optional(),
+    // false: only the card on the People page, no page of its own.
+    page: z.boolean().optional(),
   })
   .strict();
 
@@ -100,7 +115,10 @@ for (const fileName of markdownFiles) {
   }
 
   // Every address, primary or other, may belong to one profile only.
-  for (const email of [data.email, ...(data.otherEmails ?? [])]) {
+  if (!data.email && data.otherEmails?.length) {
+    failures.push(`${fileName}: otherEmails needs an email to go with it`);
+  }
+  for (const email of [data.email, ...(data.otherEmails ?? [])].filter(Boolean)) {
     const normalizedEmail = email.trim().toLowerCase();
     const owner = seenEmails.get(normalizedEmail);
     if (owner && owner !== fileName) {
